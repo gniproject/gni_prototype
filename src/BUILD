@@ -1,8 +1,6 @@
 load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
 
 
-
-
 ## gNI
 go_proto_library(
     name = "gni_go_proto",
@@ -31,7 +29,7 @@ proto_library (
 ## gNMI 
 go_proto_library(
     name = "gnmi_go_proto",
-    importpath = "gnmi",
+    importpath = "github.com/gniproject/gni_prototype/src/api/gnmi",
     proto = ":gnmi_proto",
     visibility = ["//visibility:public"],
     compilers = ["@io_bazel_rules_go//proto:go_grpc"],
@@ -73,7 +71,7 @@ proto_library (
 ## P4
 go_proto_library(
     name = "p4runtime_go_proto",
-    importpath = "p4runtime",
+    importpath = "github.com/gniproject/gni_prototype/src/api/p4runtime",
     proto = "@com_github_p4lang_p4runtime//:p4runtime_proto",
     visibility = ["//visibility:public"],
     compilers = ["@io_bazel_rules_go//proto:go_grpc"],

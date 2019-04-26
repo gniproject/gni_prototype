@@ -6,11 +6,11 @@ package gni
 import (
 	context "context"
 	fmt "fmt"
+	gnmi "github.com/gniproject/gni_prototype/src/api/gnmi"
+	p4runtime "github.com/gniproject/gni_prototype/src/api/p4runtime"
 	proto "github.com/golang/protobuf/proto"
-	gnmi "gnmi"
 	grpc "google.golang.org/grpc"
 	math "math"
-	p4runtime "p4runtime"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.

@@ -19,6 +19,8 @@ syntax = "proto3";
 import "github.com/openconfig/gnmi/proto/gnmi/gnmi.proto";
 import "p4/v1/p4runtime.proto";
 
+
+
 package gni;
 
 service gNI {
