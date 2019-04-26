@@ -6,10 +6,10 @@ package gnmi
 import (
 	context "context"
 	fmt "fmt"
+	gnmi_ext "github.com/gniproject/gni_prototype/src/api/gnmi_ext"
 	proto "github.com/golang/protobuf/proto"
 	descriptor "github.com/golang/protobuf/protoc-gen-go/descriptor"
 	any "github.com/golang/protobuf/ptypes/any"
-	gnmi_ext "gnmi_ext"
 	grpc "google.golang.org/grpc"
 	math "math"
 )

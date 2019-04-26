@@ -17,7 +17,7 @@ syntax = "proto3";
 
 
 import "github.com/openconfig/gnmi/proto/gnmi/gnmi.proto";
-import "p4/v1/p4runtime.proto";
+//import "p4/v1/p4runtime.proto";
 
 
 
@@ -65,8 +65,8 @@ message FetchRequest {
     oneof frequest {
         gnmi.GetRequest gnmiGetRequest = 1;
         gnmi.CapabilityRequest gnmiCapabilityRequest = 2;
-        p4.v1.ReadRequest p4ReadRequest = 3;
-        p4.v1.GetForwardingPipelineConfigRequest p4GetForwardingPipelineConfigRequest = 4;
+        //p4.v1.ReadRequest p4ReadRequest = 3;
+        //p4.v1.GetForwardingPipelineConfigRequest p4GetForwardingPipelineConfigRequest = 4;
     }   
 }
 
@@ -83,8 +83,8 @@ message FetchResponse {
     oneof fresponse {
         gnmi.GetResponse gnmiGetResponse = 1;
         gnmi.CapabilityResponse gnmiCapabilityResponse = 2;
-        p4.v1.ReadResponse p4ReadResponse = 3;
-        p4.v1.GetForwardingPipelineConfigResponse p4GetForwardingPipelineConfigResponse = 4;
+        //p4.v1.ReadResponse p4ReadResponse = 3;
+        //p4.v1.GetForwardingPipelineConfigResponse p4GetForwardingPipelineConfigResponse = 4;
     }
 }
 
@@ -100,8 +100,8 @@ message StoreRequest {
 
     oneof srequest {
         gnmi.SetRequest gnmiSetRequest = 1;
-        p4.v1.WriteRequest p4WriteRequest = 2;
-        p4.v1.SetForwardingPipelineConfigRequest p4SetForwardingPipelineConfigRequest = 3;
+        //p4.v1.WriteRequest p4WriteRequest = 2;
+        //p4.v1.SetForwardingPipelineConfigRequest p4SetForwardingPipelineConfigRequest = 3;
     }
 }
 
@@ -116,15 +116,15 @@ message StoreResponse {
 
     oneof sresponse {
         gnmi.SetResponse gnmiSetResponse = 1;
-        p4.v1.WriteResponse p4WriteResponse = 2;
-        p4.v1.SetForwardingPipelineConfigResponse p4SetForwardingPipelineConfigResponse = 3;
+        //p4.v1.WriteResponse p4WriteResponse = 2;
+        //p4.v1.SetForwardingPipelineConfigResponse p4SetForwardingPipelineConfigResponse = 3;
     }
 }
 
 message StreamRequest {
     oneof srequest {
         gnmi.SubscribeRequest gnmiSubRequest = 1;
-        p4.v1.StreamMessageRequest p4StreamMessageRequest = 2;
+        //p4.v1.StreamMessageRequest p4StreamMessageRequest = 2;
     }
 
 }
@@ -132,7 +132,7 @@ message StreamRequest {
 message StreamResponse {
     oneof sresponse {
         gnmi.SubscribeResponse gnmiSubResponse = 1;
-        p4.v1.StreamMessageResponse p4StreamMessageResponse = 2;
+        //p4.v1.StreamMessageResponse p4StreamMessageResponse = 2;
     }
 
 }

@@ -1,2 +1,2 @@
 clean: 
-	rm -rf github.com bazel-*
+	rm -rf github.com *.org *.com  bazel-*
