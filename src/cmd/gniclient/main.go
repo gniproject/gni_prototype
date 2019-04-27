@@ -6,7 +6,7 @@ import (
 	"time"
 
 	gni "github.com/gniproject/gni_prototype/src/api/gni"
-	gpb "github.com/gniproject/gni_prototype/src/api/gnmi"
+	gpb "github.com/openconfig/gnmi/proto/gnmi"
 	"google.golang.org/grpc"
 )
 

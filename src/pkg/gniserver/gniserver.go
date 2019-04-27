@@ -1,12 +1,14 @@
 package gniserver
 
 import (
-	"context"
 	"fmt"
 	"log"
 
 	gni "github.com/gniproject/gni_prototype/src/api/gni"
 	southbound "github.com/gniproject/gni_prototype/src/pkg/southbound"
+	"github.com/golang/protobuf/proto"
+
+	"context"
 )
 
 const (
@@ -20,9 +22,9 @@ func (s *GniServer) Fetch(ctx context.Context, req *gni.FetchRequest) (*gni.Fetc
 	device := southbound.Device{
 		Addr:     "localhost:10161",
 		Target:   "Test-onos-config",
-		CaPath:   "github.com/opennetworkinglab/onos-config/tools/test/devicesim/certs/onfca.crt",
-		CertPath: "github.com/opennetworkinglab/onos-config/tools/test/devicesim/certs/client1.crt",
-		KeyPath:  "github.com/opennetworkinglab/onos-config/tools/test/devicesim/certs/client1.key",
+		CaPath:   "/home/adib/gni_prototype/src/github.com/opennetworkinglab/onos-config/tools/test/devicesim/certs/onfca.crt",
+		CertPath: "/home/adib/gni_prototype/src/github.com/opennetworkinglab/onos-config/tools/test/devicesim/certs/client1.crt",
+		KeyPath:  "/home/adib/gni_prototype/src/github.com/opennetworkinglab/onos-config/tools/test/devicesim/certs/client1.key",
 		Timeout:  10,
 	}
 	target, err := southbound.GetTarget(southbound.Key{Key: device.Addr})
@@ -33,6 +35,21 @@ func (s *GniServer) Fetch(ctx context.Context, req *gni.FetchRequest) (*gni.Fetc
 			fmt.Println("Error ", target, err)
 		}
 	}
+
+	request := ""
+	capResponse, capErr := southbound.CapabilitiesWithString(target, request)
+	if capErr != nil {
+		fmt.Println("Error ", target, err)
+	}
+	capResponseString := proto.MarshalTextString(capResponse)
+	fmt.Println("Capabilities: ", capResponseString)
+	request = "path: <elem: <name: 'system'> elem:<name:'config'> elem: <name: 'hostname'>>"
+	getResponse, getErr := southbound.GetWithString(target, request)
+	if getErr != nil {
+		fmt.Println("Error ", target, err)
+	}
+	getResponseString := proto.MarshalTextString(getResponse)
+	fmt.Println("get: ", getResponseString)
 
 	log.Println("Fetch Request is arrived")
 	switch req.Frequest.(type) {
