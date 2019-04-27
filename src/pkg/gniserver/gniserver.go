@@ -6,7 +6,6 @@ import (
 
 	gni "github.com/gniproject/gni_prototype/src/api/gni"
 	southbound "github.com/gniproject/gni_prototype/src/pkg/southbound"
-	"github.com/golang/protobuf/proto"
 
 	"context"
 )
@@ -17,8 +16,7 @@ const (
 
 type GniServer struct{}
 
-func (s *GniServer) Fetch(ctx context.Context, req *gni.FetchRequest) (*gni.FetchResponse, error) {
-
+func createDevice() southbound.Device {
 	device := southbound.Device{
 		Addr:     "localhost:10161",
 		Target:   "Test-onos-config",
@@ -27,6 +25,12 @@ func (s *GniServer) Fetch(ctx context.Context, req *gni.FetchRequest) (*gni.Fetc
 		KeyPath:  "/home/adib/gni_prototype/src/github.com/opennetworkinglab/onos-config/tools/test/devicesim/certs/client1.key",
 		Timeout:  10,
 	}
+
+	return device
+}
+
+func getTarget(device southbound.Device) (southbound.Target, error) {
+
 	target, err := southbound.GetTarget(southbound.Key{Key: device.Addr})
 	if err != nil {
 		fmt.Println("Creating device for addr: ", device.Addr)
@@ -35,33 +39,36 @@ func (s *GniServer) Fetch(ctx context.Context, req *gni.FetchRequest) (*gni.Fetc
 			fmt.Println("Error ", target, err)
 		}
 	}
+	return target, err
+}
 
-	request := ""
-	capResponse, capErr := southbound.CapabilitiesWithString(target, request)
-	if capErr != nil {
-		fmt.Println("Error ", target, err)
-	}
-	capResponseString := proto.MarshalTextString(capResponse)
-	fmt.Println("Capabilities: ", capResponseString)
-	request = "path: <elem: <name: 'system'> elem:<name:'config'> elem: <name: 'hostname'>>"
-	getResponse, getErr := southbound.GetWithString(target, request)
-	if getErr != nil {
-		fmt.Println("Error ", target, err)
-	}
-	getResponseString := proto.MarshalTextString(getResponse)
-	fmt.Println("get: ", getResponseString)
+func (s *GniServer) Fetch(ctx context.Context, req *gni.FetchRequest) (*gni.FetchResponse, error) {
 
-	log.Println("Fetch Request is arrived")
+	device := createDevice()
+	target, err := getTarget(device)
+
+	fetchResponse := &gni.FetchResponse{}
 	switch req.Frequest.(type) {
 	case *gni.FetchRequest_GnmiGetRequest:
-		log.Println("Gnmi Get Request")
+		log.Println("Recevied gNMI GetRequest")
+		getResponse, getErr := southbound.Get(target, req.GetGnmiGetRequest())
+		if getErr != nil {
+			fmt.Println("Error ", target, err)
+		}
+		fetchResponse = &gni.FetchResponse{Fresponse: &gni.FetchResponse_GnmiGetResponse{getResponse}}
 		break
+
 	case *gni.FetchRequest_GnmiCapabilityRequest:
-		log.Println("Gnmi Capability Request")
+		log.Println("Recevied gNMI Capabilityrequest")
+		getResponse, getErr := southbound.Capabilities(target, req.GetGnmiCapabilityRequest())
+		if getErr != nil {
+			fmt.Println("Error ", target, err)
+		}
+		fetchResponse = &gni.FetchResponse{Fresponse: &gni.FetchResponse_GnmiCapabilityResponse{getResponse}}
 		break
 
 	}
-	return &gni.FetchResponse{}, nil
+	return fetchResponse, nil
 }
 
 func (s *GniServer) Store(ctx context.Context, req *gni.StoreRequest) (*gni.StoreResponse, error) {

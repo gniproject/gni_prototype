@@ -1,4 +1,3 @@
 #!/bin/sh
 
-go get github.com/openconfig/gnmi/proto
-
+go get github.com/opennetworkinglab/onos-config
