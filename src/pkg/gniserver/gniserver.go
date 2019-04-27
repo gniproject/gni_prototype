@@ -2,10 +2,11 @@ package gniserver
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	gni "github.com/gniproject/gni_prototype/src/api/gni"
-	//southbound "github.com/gniproject/gni_prototype/src/pkg/gnmiclient"
+	southbound "github.com/gniproject/gni_prototype/src/pkg/gnmiclient"
 )
 
 const (
@@ -16,7 +17,7 @@ type GniServer struct{}
 
 func (s *GniServer) Fetch(ctx context.Context, req *gni.FetchRequest) (*gni.FetchResponse, error) {
 
-	/*device := southbound.Device{
+	device := southbound.Device{
 		Addr:     "localhost:10161",
 		Target:   "Test-onos-config",
 		CaPath:   "github.com/opennetworkinglab/onos-config/tools/test/devicesim/certs/onfca.crt",
@@ -31,7 +32,7 @@ func (s *GniServer) Fetch(ctx context.Context, req *gni.FetchRequest) (*gni.Fetc
 		if err != nil {
 			fmt.Println("Error ", target, err)
 		}
-	}*/
+	}
 
 	log.Println("Fetch Request is arrived")
 	switch req.Frequest.(type) {
