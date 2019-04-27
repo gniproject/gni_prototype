@@ -6,7 +6,7 @@ import (
 	"log"
 
 	gni "github.com/gniproject/gni_prototype/src/api/gni"
-	southbound "github.com/gniproject/gni_prototype/src/pkg/gnmiclient"
+	southbound "github.com/gniproject/gni_prototype/src/pkg/southbound"
 )
 
 const (
