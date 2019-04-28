@@ -1,4 +1,6 @@
 github.com
+*.org
+*.com
 bin
 *vscode
 bazel-*

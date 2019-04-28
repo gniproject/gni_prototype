@@ -1,11 +1,12 @@
 package main
 
 import (
-	"api/gni"
 	"context"
 	"fmt"
 	"log"
 	"time"
+
+	gni "github.com/gniproject/gni_prototype/src/api/gni"
 
 	"github.com/golang/protobuf/proto"
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
