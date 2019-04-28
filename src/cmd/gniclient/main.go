@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"pkg/gniserver"
 	"time"
 
 	gni "github.com/gniproject/gni_prototype/src/api/gni"
@@ -28,6 +29,11 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
+	info := gniserver.SetTargetInfo()
+	//s := gniserver.NewServer(info.Device, info.Target)
+
+	log.Printf(info.Device.Addr)
+
 	// Test FetchRequst function based on gNMI Capabilities and Get RPCs.
 	request := ""
 	capbilityRequest := &gpb.CapabilityRequest{}
@@ -38,6 +44,7 @@ func main() {
 	gnmiCapabilities := &gni.FetchRequest{Frequest: &gni.FetchRequest_GnmiCapabilityRequest{capbilityRequest}}
 
 	response, err := c.Fetch(ctx, gnmiCapabilities)
+
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}

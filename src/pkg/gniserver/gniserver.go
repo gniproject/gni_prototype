@@ -1,22 +1,34 @@
 package gniserver
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	gni "github.com/gniproject/gni_prototype/src/api/gni"
 	southbound "github.com/gniproject/gni_prototype/src/pkg/southbound"
-
-	"context"
 )
 
-const (
-	port = ":50051"
-)
+type GniServer struct {
+	Device southbound.Device
+	Target southbound.Target
+}
 
-type GniServer struct{}
+func NewServer(device southbound.Device, target southbound.Target) *GniServer {
+	s := &GniServer{device, target}
+	return s
+}
 
-func createDevice() southbound.Device {
+type TargetInfo struct {
+	Device southbound.Device
+	Target southbound.Target
+}
+
+var TargetInfoChan chan southbound.Target
+
+var info TargetInfo
+
+func SetTargetInfo() TargetInfo {
 	device := southbound.Device{
 		Addr:     "localhost:10161",
 		Target:   "Test-onos-config",
@@ -26,11 +38,6 @@ func createDevice() southbound.Device {
 		Timeout:  10,
 	}
 
-	return device
-}
-
-func getTarget(device southbound.Device) (southbound.Target, error) {
-
 	target, err := southbound.GetTarget(southbound.Key{Key: device.Addr})
 	if err != nil {
 		fmt.Println("Creating device for addr: ", device.Addr)
@@ -39,13 +46,26 @@ func getTarget(device southbound.Device) (southbound.Target, error) {
 			fmt.Println("Error ", target, err)
 		}
 	}
-	return target, err
+
+	info = TargetInfo{device, target}
+
+	log.Println("test" + info.Device.Addr)
+
+	return info
+
 }
 
+// Fetch implements gNI Fetch RPC function that allows to read one
+// or more P4 entities or retrieve a snapshot of data from
+// the target using gNMI.
 func (s *GniServer) Fetch(ctx context.Context, req *gni.FetchRequest) (*gni.FetchResponse, error) {
 
-	device := createDevice()
-	target, err := getTarget(device)
+	log.Println("Fetch called")
+	//target := info.Target
+	target := s.Target
+
+	log.Println(info.Device.Addr)
+	var err error
 
 	fetchResponse := &gni.FetchResponse{}
 	switch req.Frequest.(type) {
@@ -71,6 +91,9 @@ func (s *GniServer) Fetch(ctx context.Context, req *gni.FetchRequest) (*gni.Fetc
 	return fetchResponse, nil
 }
 
+// Store implements the gNI Store RPC function  that allows to
+// update one or more P4 entities or modify the state of data
+// on the target using gNMI.
 func (s *GniServer) Store(ctx context.Context, req *gni.StoreRequest) (*gni.StoreResponse, error) {
 
 	return &gni.StoreResponse{}, nil
