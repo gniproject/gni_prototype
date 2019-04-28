@@ -1,13 +1,12 @@
 package main
 
 import (
+	"api/gni"
 	"context"
 	"fmt"
 	"log"
-	"pkg/gniserver"
 	"time"
 
-	gni "github.com/gniproject/gni_prototype/src/api/gni"
 	"github.com/golang/protobuf/proto"
 	gpb "github.com/openconfig/gnmi/proto/gnmi"
 	"google.golang.org/grpc"
@@ -16,6 +15,8 @@ import (
 const (
 	address = "localhost:50051"
 )
+
+type info [][]byte
 
 func main() {
 	// Set up a connection to the server.
@@ -29,10 +30,14 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	info := gniserver.SetTargetInfo()
-	//s := gniserver.NewServer(info.Device, info.Target)
+	address := []byte("localhost:10161")
+	target := []byte("Test-onos-config")
+	caPath := []byte("/home/adib/gni_prototype/src/github.com/opennetworkinglab/onos-config/tools/test/devicesim/certs/onfca.crt")
+	certPath := []byte("/home/adib/gni_prototype/src/github.com/opennetworkinglab/onos-config/tools/test/devicesim/certs/client1.crt")
+	keyPath := []byte("/home/adib/gni_prototype/src/github.com/opennetworkinglab/onos-config/tools/test/devicesim/certs/client1.key")
+	timeOut := []byte("10")
 
-	log.Printf(info.Device.Addr)
+	infoTemp := info{address, target, caPath, certPath, keyPath, timeOut}
 
 	// Test FetchRequst function based on gNMI Capabilities and Get RPCs.
 	request := ""
@@ -41,14 +46,14 @@ func main() {
 	if err := proto.UnmarshalText(*reqProto, capbilityRequest); err != nil {
 		fmt.Errorf("unable to parse gnmi.CapabilityRequest from %q : %v", *reqProto, err)
 	}
-	gnmiCapabilities := &gni.FetchRequest{Frequest: &gni.FetchRequest_GnmiCapabilityRequest{capbilityRequest}}
+	gnmiCapabilities := &gni.FetchRequest{Frequest: &gni.FetchRequest_GnmiCapabilityRequest{capbilityRequest}, Metadata: infoTemp}
 
 	response, err := c.Fetch(ctx, gnmiCapabilities)
 
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
-	log.Printf("Recevied gNMI Capabilities Response: %s", response.GetGnmiCapabilityResponse())
+	fmt.Println("Recevied gNMI Capabilities Response: %s", response.GetGnmiCapabilityResponse())
 
 	request = "path: <elem: <name: 'system'> elem:<name:'config'> elem: <name: 'hostname'>>"
 	getRequest := &gpb.GetRequest{}
@@ -57,11 +62,11 @@ func main() {
 		fmt.Errorf("unable to parse gnmi.GetRequest from %q : %v", *reqProto, err)
 	}
 
-	gnmiGetReq := &gni.FetchRequest{Frequest: &gni.FetchRequest_GnmiGetRequest{getRequest}}
+	gnmiGetReq := &gni.FetchRequest{Frequest: &gni.FetchRequest_GnmiGetRequest{getRequest}, Metadata: infoTemp}
 
 	response, err = c.Fetch(ctx, gnmiGetReq)
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
-	log.Printf("Recevied gNMI GetRequest Response: %s", response.GetGnmiGetResponse())
+	fmt.Println("Recevied gNMI GetRequest Response: %s", response.GetGnmiGetResponse())
 }

@@ -1,6 +1,7 @@
 package gniserver
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log"
@@ -9,32 +10,24 @@ import (
 	southbound "github.com/gniproject/gni_prototype/src/pkg/southbound"
 )
 
-type GniServer struct {
-	Device southbound.Device
-	Target southbound.Target
-}
+// GniServer gNI Server Struct
+type GniServer struct{}
 
-func NewServer(device southbound.Device, target southbound.Target) *GniServer {
-	s := &GniServer{device, target}
-	return s
-}
-
-type TargetInfo struct {
-	Device southbound.Device
-	Target southbound.Target
-}
-
-var TargetInfoChan chan southbound.Target
-
-var info TargetInfo
-
-func SetTargetInfo() TargetInfo {
+// SetTargetInfo creates a southbound device and returns a target based on
+// the given info.
+func SetTargetInfo(info [][]byte) (southbound.Device, southbound.Target) {
+	address := bytes.NewBuffer(info[0]).String()
+	targetInput := bytes.NewBuffer(info[1]).String()
+	caPath := bytes.NewBuffer(info[2]).String()
+	certPath := bytes.NewBuffer(info[3]).String()
+	keyPath := bytes.NewBuffer(info[4]).String()
+	//timeOut := strconv.Itoa(bytes.NewBuffer(info[5]).String())
 	device := southbound.Device{
-		Addr:     "localhost:10161",
-		Target:   "Test-onos-config",
-		CaPath:   "/home/adib/gni_prototype/src/github.com/opennetworkinglab/onos-config/tools/test/devicesim/certs/onfca.crt",
-		CertPath: "/home/adib/gni_prototype/src/github.com/opennetworkinglab/onos-config/tools/test/devicesim/certs/client1.crt",
-		KeyPath:  "/home/adib/gni_prototype/src/github.com/opennetworkinglab/onos-config/tools/test/devicesim/certs/client1.key",
+		Addr:     address,
+		Target:   targetInput,
+		CaPath:   caPath,
+		CertPath: certPath,
+		KeyPath:  keyPath,
 		Timeout:  10,
 	}
 
@@ -47,11 +40,7 @@ func SetTargetInfo() TargetInfo {
 		}
 	}
 
-	info = TargetInfo{device, target}
-
-	log.Println("test" + info.Device.Addr)
-
-	return info
+	return device, target
 
 }
 
@@ -60,15 +49,13 @@ func SetTargetInfo() TargetInfo {
 // the target using gNMI.
 func (s *GniServer) Fetch(ctx context.Context, req *gni.FetchRequest) (*gni.FetchResponse, error) {
 
-	log.Println("Fetch called")
-	//target := info.Target
-	target := s.Target
-
-	log.Println(info.Device.Addr)
+	info := req.GetMetadata()
 	var err error
+	_, target := SetTargetInfo(info)
 
 	fetchResponse := &gni.FetchResponse{}
 	switch req.Frequest.(type) {
+	// Process gNMI GetRquest
 	case *gni.FetchRequest_GnmiGetRequest:
 		log.Println("Recevied gNMI GetRequest")
 		getResponse, getErr := southbound.Get(target, req.GetGnmiGetRequest())
@@ -77,7 +64,7 @@ func (s *GniServer) Fetch(ctx context.Context, req *gni.FetchRequest) (*gni.Fetc
 		}
 		fetchResponse = &gni.FetchResponse{Fresponse: &gni.FetchResponse_GnmiGetResponse{getResponse}}
 		break
-
+		// Process gNMI CapabilityRequest
 	case *gni.FetchRequest_GnmiCapabilityRequest:
 		log.Println("Recevied gNMI Capabilityrequest")
 		getResponse, getErr := southbound.Capabilities(target, req.GetGnmiCapabilityRequest())
