@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	gni "github.com/gniproject/gni_prototype/src/api/gni"
 	southbound "github.com/gniproject/gni_prototype/src/pkg/southbound"
@@ -16,21 +17,24 @@ type GniServer struct{}
 // SetTargetInfo creates a southbound device and returns a target based on
 // the given info.
 func SetTargetInfo(info [][]byte) (southbound.Device, southbound.Target) {
+	// Parse the given metadata for creating a new device and target.
 	address := bytes.NewBuffer(info[0]).String()
 	targetInput := bytes.NewBuffer(info[1]).String()
 	caPath := bytes.NewBuffer(info[2]).String()
 	certPath := bytes.NewBuffer(info[3]).String()
 	keyPath := bytes.NewBuffer(info[4]).String()
-	//timeOut := strconv.Itoa(bytes.NewBuffer(info[5]).String())
+	timeOut, _ := time.ParseDuration((bytes.NewBuffer(info[5]).String()))
+	// Create a device.
 	device := southbound.Device{
 		Addr:     address,
 		Target:   targetInput,
 		CaPath:   caPath,
 		CertPath: certPath,
 		KeyPath:  keyPath,
-		Timeout:  10,
+		Timeout:  timeOut,
 	}
 
+	// Return the target based on the address of the device.
 	target, err := southbound.GetTarget(southbound.Key{Key: device.Addr})
 	if err != nil {
 		fmt.Println("Creating device for addr: ", device.Addr)
@@ -55,7 +59,7 @@ func (s *GniServer) Fetch(ctx context.Context, req *gni.FetchRequest) (*gni.Fetc
 
 	fetchResponse := &gni.FetchResponse{}
 	switch req.Frequest.(type) {
-	// Process gNMI GetRquest
+	// Process a gNMI GetRquest
 	case *gni.FetchRequest_GnmiGetRequest:
 		log.Println("Recevied gNMI GetRequest")
 		getResponse, getErr := southbound.Get(target, req.GetGnmiGetRequest())
@@ -64,7 +68,7 @@ func (s *GniServer) Fetch(ctx context.Context, req *gni.FetchRequest) (*gni.Fetc
 		}
 		fetchResponse = &gni.FetchResponse{Fresponse: &gni.FetchResponse_GnmiGetResponse{getResponse}}
 		break
-		// Process gNMI CapabilityRequest
+		// Process a gNMI CapabilityRequest
 	case *gni.FetchRequest_GnmiCapabilityRequest:
 		log.Println("Recevied gNMI Capabilityrequest")
 		getResponse, getErr := southbound.Capabilities(target, req.GetGnmiCapabilityRequest())
