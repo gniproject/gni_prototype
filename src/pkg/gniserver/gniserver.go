@@ -88,9 +88,10 @@ func (s *GniServer) Fetch(ctx context.Context, req *gni.FetchRequest) (*gni.Fetc
 func (s *GniServer) Store(ctx context.Context, req *gni.StoreRequest) (*gni.StoreResponse, error) {
 
 	info := req.GetMetadata()
-	var err error
+	//var err error
 	_, target := SetTargetInfo(info)
 
+	fmt.Println(target)
 	return &gni.StoreResponse{}, nil
 }
 

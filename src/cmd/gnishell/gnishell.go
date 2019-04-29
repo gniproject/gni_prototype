@@ -72,6 +72,10 @@ func main() {
 	timeOut := []byte(*timeout)
 	request := *requestProto
 
+	fmt.Println(*caCert)
+	fmt.Println(*clientCert)
+	fmt.Println(*clientKey)
+
 	infoTemp := info{address, target, caCertPath, clientCertPath, clientKeyPath, timeOut}
 
 	// Test FetchRequst function based on gNMI Capabilities and Get RPCs.
@@ -90,7 +94,7 @@ func main() {
 			response, err := c.Fetch(ctx, gnmiCapabilities)
 
 			if err != nil {
-				log.Fatalf("could not greet: %v", err)
+				log.Fatalf("could not execute RPC on the remote server: %v", err)
 			}
 			fmt.Println("Recevied gNMI Capabilities Response:", response.GetGnmiCapabilityResponse())
 			break
@@ -105,7 +109,7 @@ func main() {
 
 			response, err := c.Fetch(ctx, gnmiGetReq)
 			if err != nil {
-				log.Fatalf("could not greet: %v", err)
+				log.Fatalf("could not execute RPC on the remote server: %v", err)
 			}
 			fmt.Println("Recevied gNMI GetRequest Response: ", response.GetGnmiGetResponse())
 			break

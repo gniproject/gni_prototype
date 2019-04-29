@@ -15,7 +15,7 @@ CA_CERT_NAME="onfca.crt"
        -target_name "Test-onos-config" \
        -client_crt $CERTS$CLIENT_CERT_NAME \
        -client_key $CERTS$CLIENT_KEY_NAME \
-       -ca_crt $CERT$CA_CERT_NAME \
+       -ca_crt $CERTS$CA_CERT_NAME \
        
 ./gnishell    -gni_address "localhost:50051" \
        -target_address "localhost:10161" \
@@ -26,4 +26,4 @@ CA_CERT_NAME="onfca.crt"
        -target_name "Test-onos-config" \
        -client_crt $CERTS$CLIENT_CERT_NAME \
        -client_key $CERTS$CLIENT_KEY_NAME \
-       -ca_crt $CERT$CA_CERT_NAME \
+       -ca_crt $CERTS$CA_CERT_NAME \
