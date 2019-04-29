@@ -18,7 +18,7 @@ CA_CERT_NAME="onfca.crt"
        -ca_crt $CERTS$CA_CERT_NAME \
        
 ./gnishell    -gni_address "localhost:50051" \
-       -target_address "localhost:10161" \
+       -target_address "localhost:10162" \
        -timeout "5" \
        -proto   "path: <elem: <name: 'system'> elem:<name:'config'> elem: <name: 'hostname'>>" \
        -rpc "fetch" \

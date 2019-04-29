@@ -55,13 +55,13 @@ func (s *GniServer) Fetch(ctx context.Context, req *gni.FetchRequest) (*gni.Fetc
 
 	info := req.GetMetadata()
 	var err error
-	_, target := SetTargetInfo(info)
+	device, target := SetTargetInfo(info)
 
 	fetchResponse := &gni.FetchResponse{}
 	switch req.Frequest.(type) {
 	// Process a gNMI GetRquest
 	case *gni.FetchRequest_GnmiGetRequest:
-		log.Println("Recevied gNMI GetRequest")
+		log.Println("Recevied gNMI GetRequest for target:", device.Addr)
 		getResponse, getErr := southbound.Get(target, req.GetGnmiGetRequest())
 		if getErr != nil {
 			fmt.Println("Error ", target, err)
@@ -70,7 +70,7 @@ func (s *GniServer) Fetch(ctx context.Context, req *gni.FetchRequest) (*gni.Fetc
 		break
 		// Process a gNMI CapabilityRequest
 	case *gni.FetchRequest_GnmiCapabilityRequest:
-		log.Println("Recevied gNMI Capabilityrequest")
+		log.Println("Recevied gNMI Capability for target:", device.Addr)
 		getResponse, getErr := southbound.Capabilities(target, req.GetGnmiCapabilityRequest())
 		if getErr != nil {
 			fmt.Println("Error ", target, err)
